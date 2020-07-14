@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>车型识别</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body background="/static/img/bg10.jpg">
+<div class="container">
+	<div class="row clearfix">
+        <div class="col-md-12 column">
+			<h1  class="text-center">
+				车类识别
+			</h1>
+            <h1 style="visibility: hidden"> blank</h1>
+        </div>
+
+		<div class="col-md-6 column">
+            <div class="thumbnail">
+                <div class="caption">
+                    <form name="form0" id="form0" >
+                        <input type="file" name="file0" id="file0"
+                             accept="image/gif,image/jpeg,image/jpg,image/png,image/svg"
+                             style="visibility:hidden" onchange=filepath.value=this.value>
+                        <input type=textfield id="filepath">
+                        <input type=button id="filebutton" value=上传图片 onclick="file0.click()"><br/>
+                        <img src="" id="img0"  onload="DrawImage(this,500,500)">
+                    </form>
+                     <button type="button" class="btn btn-primary"
+                         onclick="recognize()">识别</button>
+                     <div hidden id="warningInfo" class="alert alert-warning">请上传图片！</div>
+                </div>
+           </div>
+		</div>
+
+        <div class="col-md-4 column">
+            <div class="thumbnail">
+                <h3 style="color: cornflowerblue">识别结果:</h3>
+                <p style="visibility: hidden">blank</p>
+                <form>
+                    <div>
+                        <label class="form-inline">车类：
+                            <output type="text" class="form-control" id="v_type">
+
+                            </output>
+                        </label>
+                    </div>
+
+                </form>
+            </div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="/static/js/upLoadImage.js"></script>
+<script type="text/javascript">
+    function recognize(){
+        var img_src=document.getElementById('filepath').value
+        if(!img_src)
+            document.getElementById('warningInfo').hidden=false
+        else{
+            document.getElementById('warningInfo').hidden=true
+            var files=document.getElementById('file0').files
+            var img=new FormData();
+            img.append('img',files[0])
+            img.append('csrfmiddlewaretoken','{{ csrf_token}}')
+
+            $.ajax({
+                url:'get_VTR_info/',
+                type:'POST',
+                data:img,
+                dataType:'json',// 预期服务器返回数据的类型。django后端用HttpResponse返回json格式字符串，args不会自动反序列化，拿到的还是json格式字符串string字符类型，而如果是用JsonResponse返回的那么args会自动返序列化成前端js的对象类型
+                processData:false,  // 让浏览器不要对你的数据进行任何的操作
+				contentType:false,  // 不要使用任何编码格式 对象formdata自带编码格式并且django能够识别该对象
+
+                success:function (e) {
+                    console.log(e)
+                    error:"error"
+                     //通过e获取后端返回的数据并对页面上的显示的东西进行修改
+                    $("#v_type").val(e['v_type'])
+                }
+            })
+        }
+    }
+</script>
+</body>
+</html>
