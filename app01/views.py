@@ -1,21 +1,20 @@
+from django.shortcuts import render
+
+# Create your views here.
 import json
 import urllib
 from bs4 import BeautifulSoup
 import datetime
 from django.shortcuts import render
-from django.views.decorators.clickjacking import xframe_options_exempt
 from PIL import Image
-from predict import prediction
+#from predict import prediction
 from django.http import HttpResponse
-from Django_demo1.settings import MEDIA_ROOT
+from QMS.settings import MEDIA_ROOT
 
 #pip3 install --default-timeout=100 tensorflow -i http://pypi.douban.com/simple/ --trusted-host pypi.douban.com
 def main(request):
     return render(request, 'main.html', {})
 
-@xframe_options_exempt
-def getImageModule(request):
-    return render(request,'uploadImage_module.html',{})
 
 #------------------------函数名结尾的R为Recognization-------------------
 
@@ -83,5 +82,8 @@ def get_VTR_info(request):
             f.write(content)
 
     image=Image.open(save_path)
-    result=prediction(image)
+    result={}
+    #result=prediction(image)
     return HttpResponse(json.dumps(result))
+
+
